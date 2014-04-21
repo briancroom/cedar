@@ -1302,6 +1302,26 @@ describe(@"equal matcher", ^{
                         expect(actualValue).to_not(equal(expectedValue));
                     });
                 });
+
+                describe(@"and the expected value is nil", ^{
+                    beforeEach(^{
+                        expectedValue = nil;
+                    });
+
+                    describe(@"positive match", ^{
+                        it(@"should fail with a sensible failure message", ^{
+                            expectFailureWithMessage(@"Expected <7> to equal <(null)>", ^{
+                                expect(actualValue).to(equal(expectedValue));
+                            });
+                        });
+                    });
+
+                    describe(@"negative match", ^{
+                        it(@"should pass", ^{
+                            expect(actualValue).to_not(equal(expectedValue));
+                        });
+                    });
+                });
             });
         });
 
