@@ -6,8 +6,7 @@ namespace Cedar { namespace Matchers { namespace Comparators {
         if (strcmp(@encode(T), "@") == 0 && strcmp(@encode(U), "@") == 0) {
             NSValue *actualValueId = [NSValue value:&actualValue withObjCType:@encode(id)];
             NSValue *expectedValueId = [NSValue value:&expectedValue withObjCType:@encode(id)];
-            return ([[actualValueId nonretainedObjectValue] isEqual:[expectedValueId nonretainedObjectValue]] ||
-                    [actualValueId nonretainedObjectValue] == [expectedValueId nonretainedObjectValue]);
+            return [[actualValueId nonretainedObjectValue] isEqual:[expectedValueId nonretainedObjectValue]];
         } else {
             return actualValue == expectedValue;
         }

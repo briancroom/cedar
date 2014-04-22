@@ -358,6 +358,27 @@ describe(@"equal matcher", ^{
                     });
                 });
             });
+
+            describe(@"and the values are nil", ^{
+                id actualValue = nil;
+                beforeEach(^{
+                    expectedValue = nil;
+                });
+
+                describe(@"positive match", ^{
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
+                    });
+                });
+
+                describe(@"negative match", ^{
+                    it(@"should pass", ^{
+                        expect(actualValue).to_not(equal(expectedValue));
+                    });
+                });
+            });
         });
 
         describe(@"and the expected value is also declared as an id", ^{
@@ -402,6 +423,28 @@ describe(@"equal matcher", ^{
                     });
                 });
             });
+
+            describe(@"and the values are nil", ^{
+                id actualValue = nil;
+                beforeEach(^{
+                    expectedValue = nil;
+                });
+
+                describe(@"positive match", ^{
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
+                    });
+                });
+
+                describe(@"negative match", ^{
+                    it(@"should pass", ^{
+                        expect(actualValue).to_not(equal(expectedValue));
+                    });
+                });
+            });
+
         });
 
         describe(@"and the expected value is declared as an NSNumber *", ^{
@@ -583,6 +626,27 @@ describe(@"equal matcher", ^{
                     });
                 });
             });
+
+            describe(@"and the values are nil", ^{
+                NSObject *actualValue = nil;
+                beforeEach(^{
+                    expectedValue = nil;
+                });
+
+                describe(@"positive match", ^{
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
+                    });
+                });
+
+                describe(@"negative match", ^{
+                    it(@"should pass", ^{
+                        expect(actualValue).to_not(equal(expectedValue));
+                    });
+                });
+            });
         });
 
         describe(@"and the expected value is declared as an id", ^{
@@ -616,6 +680,27 @@ describe(@"equal matcher", ^{
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
                         expectFailureWithMessage(@"Expected <7> to equal <8>", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
+                    });
+                });
+
+                describe(@"negative match", ^{
+                    it(@"should pass", ^{
+                        expect(actualValue).to_not(equal(expectedValue));
+                    });
+                });
+            });
+
+            describe(@"and the values are nil", ^{
+                NSObject *actualValue = nil;
+                beforeEach(^{
+                    expectedValue = nil;
+                });
+
+                describe(@"positive match", ^{
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
                             expect(actualValue).to(equal(expectedValue));
                         });
                     });
