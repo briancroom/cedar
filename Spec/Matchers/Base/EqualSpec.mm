@@ -367,15 +367,17 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
                             expect(actualValue).to(equal(expectedValue));
                         });
                     });
                 });
 
                 describe(@"negative match", ^{
-                    it(@"should pass", ^{
-                        expect(actualValue).to_not(equal(expectedValue));
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
                     });
                 });
             });
@@ -432,15 +434,17 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
                             expect(actualValue).to(equal(expectedValue));
                         });
                     });
                 });
 
                 describe(@"negative match", ^{
-                    it(@"should pass", ^{
-                        expect(actualValue).to_not(equal(expectedValue));
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
                     });
                 });
             });
@@ -635,15 +639,17 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
                             expect(actualValue).to(equal(expectedValue));
                         });
                     });
                 });
 
                 describe(@"negative match", ^{
-                    it(@"should pass", ^{
-                        expect(actualValue).to_not(equal(expectedValue));
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
                     });
                 });
             });
@@ -700,15 +706,17 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(null)> to equal <(null)>", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
                             expect(actualValue).to(equal(expectedValue));
                         });
                     });
                 });
 
                 describe(@"negative match", ^{
-                    it(@"should pass", ^{
-                        expect(actualValue).to_not(equal(expectedValue));
+                    it(@"should fail with a sensible failure message", ^{
+                        expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
+                            expect(actualValue).to(equal(expectedValue));
+                        });
                     });
                 });
             });
@@ -1395,15 +1403,17 @@ describe(@"equal matcher", ^{
 
                     describe(@"positive match", ^{
                         it(@"should fail with a sensible failure message", ^{
-                            expectFailureWithMessage(@"Expected <7> to equal <(null)>", ^{
+                            expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
                                 expect(actualValue).to(equal(expectedValue));
                             });
                         });
                     });
 
                     describe(@"negative match", ^{
-                        it(@"should pass", ^{
-                            expect(actualValue).to_not(equal(expectedValue));
+                        it(@"should fail with a sensible failure message", ^{
+                            expectFailureWithMessage(@"Unexpected use of equal matcher to check for nil; use the be_nil matcher to match nil values", ^{
+                                expect(actualValue).to(equal(expectedValue));
+                            });
                         });
                     });
                 });
