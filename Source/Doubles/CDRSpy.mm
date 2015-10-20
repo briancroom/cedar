@@ -114,6 +114,10 @@
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
+    if (![self methodSignatureForSelector:invocation.selector]) {
+        [self doesNotRecognizeSelector:invocation.selector];
+    }
+
     [self.cedar_double_impl record_method_invocation:invocation];
     int method_invocation_result = [self.cedar_double_impl invoke_stubbed_method:invocation];
 
@@ -183,6 +187,10 @@
     return [self.cedar_double_impl add_stub:stubbed_method];
 }
 
+- (void)reject_method:(const Cedar::Doubles::RejectedMethod &)rejected_method {
+    return [self.cedar_double_impl reject_method:rejected_method];
+}
+
 - (NSArray *)sent_messages {
     return self.cedar_double_impl.sent_messages;
 }
@@ -193,6 +201,14 @@
 
 - (void)reset_sent_messages {
     [self.cedar_double_impl reset_sent_messages];
+}
+
+- (BOOL)has_stubbed_method_for:(SEL)selector {
+    return [self.cedar_double_impl has_stubbed_method_for:selector];
+}
+
+- (BOOL)has_rejected_method_for:(SEL)selector {
+    return [self.cedar_double_impl has_rejected_method_for:selector];
 }
 
 #pragma mark - Private
