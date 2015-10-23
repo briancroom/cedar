@@ -24,11 +24,11 @@
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
-    return [super respondsToSelector:aSelector] || [self.things respondsToSelector:aSelector] || aSelector == @selector(unforwardedUnimplementedMethod);
+    return [super respondsToSelector:aSelector] || [self.things respondsToSelector:aSelector] || sel_isEqual(aSelector, @selector(unforwardedUnimplementedMethod));
 }
 
 + (BOOL)instancesRespondToSelector:(SEL)aSelector {
-    return [super instancesRespondToSelector:aSelector] || [[NSArray class] instancesRespondToSelector:aSelector] || aSelector == @selector(unforwardedUnimplementedMethod);
+    return [super instancesRespondToSelector:aSelector] || [[NSArray class] instancesRespondToSelector:aSelector] || sel_isEqual(aSelector, @selector(unforwardedUnimplementedMethod));
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {

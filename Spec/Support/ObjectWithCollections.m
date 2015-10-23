@@ -6,7 +6,9 @@
     if (self = [super init]) {
         self.array = [NSMutableArray array];
         self.set = [NSMutableSet set];
+#if CDR_SUPPORT_HAS_ORDERED_SET
         self.orderedSet = [NSMutableOrderedSet orderedSet];
+#endif
         self.manualArray = [NSMutableArray array];
         self.manualSet = [NSMutableSet set];
     }
@@ -17,7 +19,9 @@
 - (void)dealloc {
     self.array = nil;
     self.set = nil;
+#if CDR_SUPPORT_HAS_ORDERED_SET
     self.orderedSet = nil;
+#endif
     self.manualArray = nil;
     self.manualSet = nil;
     [super dealloc];
@@ -36,12 +40,15 @@
 - (void) mutateObservedProperty {
     [[self mutableArrayValueForKey:@"array"] addObject:@"mutations are cool"];
     [[self mutableSetValueForKey:@"set"] addObject:@"mutations are cool"];
+#if CDR_SUPPORT_HAS_ORDERED_SET
     [[self mutableOrderedSetValueForKey:@"orderedSet"] addObject:@"mutations are cool"];
+#endif
 
     [[self mutableArrayValueForKeyPath:@"array"] addObject:@"jinkies!"];
     [[self mutableSetValueForKeyPath:@"set"] addObject:@"mutate all the key paths"];
+#if CDR_SUPPORT_HAS_ORDERED_SET
     [[self mutableOrderedSetValueForKeyPath:@"orderedSet"] addObject:@"in your tests, mutating your sets"];
-
+#endif
 
     NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:0];
 

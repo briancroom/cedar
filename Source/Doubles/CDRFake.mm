@@ -30,13 +30,15 @@
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
-    if ([self.cedar_double_impl has_rejected_method_for:sel]) {
-        return nil;
-    }
-    return [self.klass instanceMethodSignatureForSelector:sel];
+    return [self.klass instanceMethodSignatureForSelector:sel] ?: [super methodSignatureForSelector:sel];
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
+    if ([self.cedar_double_impl has_rejected_method_for:[invocation selector]]) {
+        [self doesNotRecognizeSelector: [invocation selector]];
+        return;
+    }
+
     @try {
         [self.cedar_double_impl record_method_invocation:invocation];
         CDRStubInvokeStatus method_invocation_result = [self.cedar_double_impl invoke_stubbed_method:invocation];
@@ -52,6 +54,7 @@
                                            userInfo:nil]
                      raise];
                 }
+                [invocation cdr_clearReturnValue];
             } break;
             case CDRStubWrongArguments: {
                 if (self.requiresExplicitStubs) {
@@ -60,6 +63,7 @@
                                              reason:reason
                                            userInfo:nil] raise];
                 }
+                [invocation cdr_clearReturnValue];
             } break;
             default:
                 break;
@@ -69,6 +73,14 @@
         [invocation cdr_copyBlockArguments];
         [invocation retainArguments];
     }
+}
+
+- (void)doesNotRecognizeSelector:(SEL)selector {
+    if ([self has_rejected_method_for:selector]) {
+        NSString *reason = [NSString stringWithFormat:@"Received message with explicitly rejected selector <%@>", NSStringFromSelector(selector)];
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil] raise];
+    }
+    [super doesNotRecognizeSelector:selector];
 }
 
 #pragma mark - CedarDouble protocol

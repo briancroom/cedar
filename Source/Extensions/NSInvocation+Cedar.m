@@ -1,3 +1,4 @@
+#define EXPOSE_NSInvocation_IVARS 1
 #import "NSInvocation+Cedar.h"
 #import "NSMethodSignature+Cedar.h"
 #import "CDRBlockHelper.h"
@@ -5,10 +6,6 @@
 #import <objc/runtime.h>
 
 static char COPIED_BLOCKS_KEY;
-
-@interface NSInvocation (UndocumentedPrivate)
-- (void)invokeUsingIMP:(IMP)imp;
-@end
 
 @implementation NSInvocation (Cedar)
 
@@ -88,4 +85,61 @@ static char COPIED_BLOCKS_KEY;
     return args;
 }
 
+- (void)cdr_clearReturnValue {
+    NSUInteger returnValueSize = [[self methodSignature] methodReturnLength];
+    if (returnValueSize > 0) {
+        char returnValueBuffer[returnValueSize];
+        memset(returnValueBuffer, 0, returnValueSize);
+        [self setReturnValue:&returnValueBuffer];
+    }
+}
+
 @end
+
+
+#ifdef __GNUSTEP_RUNTIME__
+
+@interface GSFFCallInvocation : NSInvocation @end
+@interface GSFFIInvocation : NSInvocation @end
+
+@implementation GSFFCallInvocation (InvokeUsingIMP)
+extern void GSFFCallInvokeWithTargetAndImp(NSInvocation *inv, id anObject, IMP imp) __attribute__((weak));
+
+// Based on portions of -[GSFFCallInvocation invokeWithTarget:]
+- (void)invokeUsingIMP:(IMP)imp {
+    const char *type = self.methodSignature.methodReturnType;
+
+    GSFFCallInvokeWithTargetAndImp(self, self.target, imp);
+
+    if (strchr(type, _C_ID) != NULL) {
+        [*(id *)_retval retain];
+    }
+
+    _validReturn = YES;
+}
+
+@end
+
+@implementation GSFFIInvocation (InvokeUsingIMP)
+extern void GSFFIInvokeWithTargetAndImp(NSInvocation *inv, id anObject, IMP imp) __attribute__((weak));
+extern BOOL cifframe_decode_arg (const char *type, void* buffer);
+
+// Based on portions of -[GSFFIInvocation invokeWithTarget:]
+- (void)invokeUsingIMP:(IMP)imp {
+    const char *type = self.methodSignature.methodReturnType;
+
+    GSFFIInvokeWithTargetAndImp(self, self.target, imp);
+    if (strchr(type, _C_VOID) == NULL) {
+        cifframe_decode_arg(type, _retval);
+    }
+
+    if (strchr(type, _C_ID) != NULL) {
+        [*(id *)_retval retain];
+    }
+
+    _validReturn = YES;
+}
+
+@end
+
+#endif

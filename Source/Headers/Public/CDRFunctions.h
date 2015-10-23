@@ -7,7 +7,7 @@ extern "C" {
 NSArray *CDRReportersFromEnv(const char*defaultReporterClassName);
 
 int CDRRunSpecs();
-OBJC_EXPORT void CDRInjectIntoXCTestRunner();
+void CDRInjectIntoXCTestRunner();
 int CDRRunSpecsWithCustomExampleReporters(NSArray *reporters);
 NSArray *CDRShuffleItemsInArrayWithSeed(NSArray *sortedItems, unsigned int seed);
 NSArray *CDRReportersToRun();

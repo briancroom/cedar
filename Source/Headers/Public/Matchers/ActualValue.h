@@ -77,7 +77,7 @@ namespace Cedar { namespace Matchers {
     };
 
     template<typename T>
-    ActualValue<T>::ActualValue(const char *fileName, int lineNumber, const T & value) : fileName_(fileName), lineNumber_(lineNumber), value_(value), to(*this), to_not(*this, true) {
+    ActualValue<T>::ActualValue(const char *fileName, int lineNumber, const T & value) : to(*this), to_not(*this, true), value_(value), fileName_(fileName), lineNumber_(lineNumber) {
     }
 
     template<typename T>

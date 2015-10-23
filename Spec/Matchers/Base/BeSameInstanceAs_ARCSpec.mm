@@ -1,9 +1,4 @@
-#if TARGET_OS_IPHONE
-#import <Cedar/CDRSpecHelper.h>
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
-
+#import "Cedar.h"
 extern "C" {
 #import "ExpectFailureWithMessage.h"
 }
@@ -15,7 +10,7 @@ SPEC_BEGIN(BeSameInstanceAs_ARCSpec)
 describe(@"be_same_instance_as matcher (under ARC)", ^{
     describe(@"when the actual value is not a pointer", ^{
         int actualValue = 1;
-        int *expectedValue = nil;
+        int *expectedValue = NULL;
 
         it(@"should fail with an exception", ^{
             expectFailureWithMessage(@"Attempt to compare non-pointer type for sameness.", ^{
@@ -47,7 +42,7 @@ describe(@"be_same_instance_as matcher (under ARC)", ^{
         });
 
         describe(@"and the values do not point to the same address space", ^{
-            int *expectedValue = nil;
+            int *expectedValue = NULL;
 
             describe(@"positive match", ^{
                 it(@"should fail with a sensible failure message", ^{

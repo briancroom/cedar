@@ -4,7 +4,7 @@
 // conflict with the compiler attempting to include the file from the project.
 #import "Cedar-iOS.h"
 #else
-#import <Cedar/Cedar.h>
+#import "Cedar.h"
 #endif
 
 // https://github.com/pivotal/cedar/issues/53 sums things up nicely

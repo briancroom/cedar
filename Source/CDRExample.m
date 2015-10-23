@@ -51,7 +51,7 @@ const CDRSpecBlock PENDING = nil;
 }
 
 - (BOOL)isPending {
-    return (self.state == CDRExampleStateIncomplete && block_ == nil) || self.state == CDRExampleStatePending;
+    return (self.state == CDRExampleStateIncomplete && block_ == NULL) || self.state == CDRExampleStatePending;
 }
 
 - (void)runWithDispatcher:(CDRReportDispatcher *)dispatcher {

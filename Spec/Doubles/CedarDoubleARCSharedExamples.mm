@@ -1,6 +1,6 @@
-#import <Cedar/CDRSpecHelper.h>
+#import "Cedar.h"
 #import "SimpleIncrementer.h"
-
+#import <dispatch/dispatch.h>
 #if !__has_feature(objc_arc)
 #error This spec must be compiled with ARC to work properly
 #endif
@@ -19,7 +19,9 @@ sharedExamplesFor(@"a Cedar double when used with ARC", ^(NSDictionary *sharedCo
 
     context(@"when recording an invocation", ^{
         context(@"inside an async block", ^{
-            it(@"should complete happily", ^{
+            fit(@"should complete happily", ^{
+                NSLog(@"*** Beginning ARC shared example with %@", myDouble);
+
                 __block bool called = false;
                 myDouble stub_method("methodWithBlock:").and_do(^(NSInvocation *invocation) {
                     void (^runBlock)();
@@ -33,12 +35,14 @@ sharedExamplesFor(@"a Cedar double when used with ARC", ^(NSDictionary *sharedCo
 
                 dispatch_group_async(group, queue, ^{
                     dispatch_group_enter(group);
+                    NSLog(@"   Invoking methodWithBlock: from dispatch_group_async");
                     [myDouble methodWithBlock:^{
                         dispatch_group_leave(group);
                     }];
                 });
 
                 dispatch_group_notify(group, queue, ^{
+                    NSLog(@"   Invoking methodWithBlock: from notify");
                     [myDouble methodWithBlock:^{ }];
                 });
 
@@ -49,6 +53,7 @@ sharedExamplesFor(@"a Cedar double when used with ARC", ^(NSDictionary *sharedCo
 
                 myDouble should have_received("methodWithBlock:");
                 [myDouble reset_sent_messages];
+                NSLog(@"*** Finished ARC shared example");
             });
         });
     });

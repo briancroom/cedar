@@ -50,7 +50,7 @@ static NSMutableArray *registeredDoubleImpls__ = nil;
     NSMutableArray *sentMessages = [[NSMutableArray alloc] initWithCapacity:self.sent_messages.count];
 
     for(NSInvocation *invocation in self.sent_messages) {
-        if (invocation.selector == selector) {
+        if (sel_isEqual(invocation.selector, selector)) {
             [sentMessages addObject:invocation];
         }
     }

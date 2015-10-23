@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
+#import <unistd.h>
 #import "CDRSpec.h"
 #import "CDRExampleGroup.h"
 #import "CDRExampleReporter.h"
@@ -44,7 +45,7 @@ NSArray *CDRSelectClasses(BOOL (^classSelectionPredicate)(Class class)) {
     NSMutableArray *selectedClasses = [NSMutableArray array];
 
     CDREnumerateClasses(^(Class class, BOOL *stop) {
-        if (classSelectionPredicate(class)) {
+        if (class_getSuperclass(class) != Nil && classSelectionPredicate(class)) {
             [class retain];
             [selectedClasses addObject:class];
             [class release];

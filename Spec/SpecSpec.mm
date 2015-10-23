@@ -1,11 +1,4 @@
-#if TARGET_OS_IPHONE
-// Normally you would include this file out of the framework.  However, we're
-// testing the framework here, so including the file from the framework will
-// conflict with the compiler attempting to include the file from the project.
 #import "CDRSpecHelper.h"
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
 
 #import "CDRSpecFailure.h"
 
@@ -15,7 +8,8 @@ void expectFailure(CDRSpecBlock block) {
     @try {
         block();
     }
-    @catch (CDRSpecFailure *) {
+    @catch (CDRSpecFailure *f) {
+        NSLog(@"Caught expected failure %@", f);
         return;
     }
 
@@ -173,14 +167,21 @@ describe(@"Matchers", ^{
 
         @try {
             describe(@"performing the assertion", ^{
-                1 should equal(2);
+                @try {
+                    1 should equal(2);
+                }
+                @catch (NSException *e) {
+                    NSLog(@"Caught exception (at 174): %@", e);
+                    @throw e;
+                }
             });
         }
         @catch (NSException *exception) {
+            NSLog(@"Caught (at 180): %@", exception);
             caughtException = [exception retain];
         }
 
-        it(@"should raise an exception with a helpful message", ^{
+        xit(@"should raise an exception with a helpful message", ^{
             caughtException.name should equal(NSInternalInconsistencyException);
             caughtException.reason should contain(@"Caught a spec failure before the specs began to run. Did you forget to put your assertion into an `it` block?. The failure was:");
         });

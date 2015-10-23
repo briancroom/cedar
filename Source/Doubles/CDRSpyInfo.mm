@@ -2,8 +2,13 @@
 #import "CDRSpy.h"
 #import "CedarDoubleImpl.h"
 #import <objc/runtime.h>
+#if __has_include(<objc/objc-arc.h>) // for GNUstep
+extern "C" {
+#import <objc/objc-arc.h>
+}
+#endif
 
-static NSHashTable *currentSpies__;
+static NSMapTable *currentSpies__; // Maps non-zeroing weak object references to strong CDRSpyInfo instances
 
 @interface CDRSpyInfo ()
 @property (nonatomic, assign) id originalObject;
@@ -14,10 +19,10 @@ static NSHashTable *currentSpies__;
     __weak id _weakOriginalObject;
 }
 
-static char *CDRSpyKey;
-
 + (void)initialize {
-    currentSpies__ = [[NSHashTable weakObjectsHashTable] retain];
+    currentSpies__ = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsOpaqueMemory|NSPointerFunctionsOpaquePersonality
+                                               valueOptions:NSMapTableStrongMemory|NSMapTableObjectPointerPersonality
+                                                   capacity:0];
 }
 
 + (void)storeSpyInfoForObject:(id)object {
@@ -28,20 +33,23 @@ static char *CDRSpyKey;
     spyInfo.spiedClass = object_getClass(object);
     spyInfo.cedarDouble = [[[CedarDoubleImpl alloc] initWithDouble:object] autorelease];
 
-    [currentSpies__ addObject:spyInfo];
-    objc_setAssociatedObject(object, &CDRSpyKey, spyInfo, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    //! Acquire exclusive lock
+    [currentSpies__ setObject:spyInfo forKey:object];
+    //! Release exclusive lock
 }
 
 + (BOOL)clearSpyInfoForObject:(id)object {
-    CDRSpyInfo *spyInfo = [CDRSpyInfo spyInfoForObject:object];
+    //! Acquire exclusive lock
+    BOOL clearedSpy = NO;
+    CDRSpyInfo *spyInfo = [CDRSpyInfo spyInfoForObject:object]; // may need an unlocked version of this
     if (spyInfo) {
         spyInfo.originalObject = nil;
         spyInfo.weakOriginalObject = nil;
-        [currentSpies__ removeObject:spyInfo];
-        objc_setAssociatedObject(object, &CDRSpyKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        return YES;
+        [currentSpies__ removeObjectForKey:object];
+        clearedSpy = YES;
     }
-    return NO;
+    //! Release exclusive lock
+    return clearedSpy;
 }
 
 - (void)dealloc {
@@ -62,7 +70,10 @@ static char *CDRSpyKey;
 }
 
 + (CDRSpyInfo *)spyInfoForObject:(id)object {
-    return objc_getAssociatedObject(object, &CDRSpyKey);
+    //! Acquire concurrent lock
+    CDRSpyInfo *spyInfo = [currentSpies__ objectForKey:object];
+    //! Release concurrent lock
+    return spyInfo;
 }
 
 - (IMP)impForSelector:(SEL)selector {
@@ -89,12 +100,21 @@ static char *CDRSpyKey;
 }
 
 + (void)afterEach {
-    for (CDRSpyInfo *spyInfo in [currentSpies__ allObjects]) {
-        id originalObject = spyInfo.weakOriginalObject;
-        if (originalObject) {
-            Cedar::Doubles::CDR_stop_spying_on(originalObject);
+    //! Acquire exclusive lock
+    NSMutableArray *allSpyInfo = [NSMutableArray arrayWithCapacity:currentSpies__.count];
+    for (CDRSpyInfo *spyInfo in [currentSpies__ objectEnumerator]) {
+        [allSpyInfo addObject:spyInfo];
+    }
+
+    for (CDRSpyInfo *spyInfo in allSpyInfo) {
+        id object = spyInfo.weakOriginalObject;
+        if (object) {
+            Cedar::Doubles::CDR_stop_spying_on(object); // May need unlocked version of this
         }
     }
+
+    [currentSpies__ removeAllObjects];
+    //! Release exclusive lock
 }
 
 #pragma mark - Accessors

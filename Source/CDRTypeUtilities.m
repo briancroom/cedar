@@ -101,12 +101,18 @@ static NSCharacterSet *typeEncodingModifiersCharacterSet;
 
     if ([scanner scanCharactersFromSet:typeEncodingModifiersCharacterSet intoString:&modifiers]) {
         NSMutableArray *modifierNames = [NSMutableArray array];
-        [modifiers enumerateSubstringsInRange:NSMakeRange(0, [modifiers length]) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+        NSRange range = NSMakeRange(0, modifiers.length);
+
+        while ((range = [modifiers rangeOfCharacterFromSet:typeEncodingModifiersCharacterSet options:0 range:range]).location != NSNotFound) {
+            NSString *substring = [modifiers substringWithRange:range];
             NSString *modifierName = typeEncodingModifiersMapping[substring];
             if (modifierName) {
                 [modifierNames addObject:modifierName];
             }
-        }];
+
+            range = NSMakeRange(NSMaxRange(range), modifiers.length-NSMaxRange(range));
+        }
+
         modifiers = [modifierNames count]>0 ? [modifierNames componentsJoinedByString:@" "] : nil;
     }
 

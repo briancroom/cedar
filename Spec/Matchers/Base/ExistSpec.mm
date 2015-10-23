@@ -1,9 +1,4 @@
-#if TARGET_OS_IPHONE
-#import <Cedar/CDRSpecHelper.h>
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
-
+#import "Cedar.h"
 extern "C" {
 #import "ExpectFailureWithMessage.h"
 }
@@ -13,8 +8,7 @@ using namespace Cedar::Matchers;
 SPEC_BEGIN(ExistSpec)
 
 NSFileManager *fileManager = [NSFileManager defaultManager];
-NSURL *cacheURL = [[fileManager URLsForDirectory:NSCachesDirectory
-                                       inDomains:NSUserDomainMask] objectAtIndex:0];
+NSURL *cacheURL = [NSURL fileURLWithPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
 describe(@"exist matcher", ^{
     if (![fileManager fileExistsAtPath:cacheURL.path]) {
         [fileManager createDirectoryAtPath:cacheURL.path

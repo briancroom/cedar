@@ -1,9 +1,4 @@
-#if TARGET_OS_IPHONE
-#import "CDRSpecHelper.h"
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
-
+#import "Cedar.h"
 extern "C" {
 #import "ExpectFailureWithMessage.h"
 }

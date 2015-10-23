@@ -47,6 +47,32 @@ static bool CDR_protocol_hasSelector(Protocol *protocol, SEL selector) {
     return NO;
 }
 
+static NSMethodSignature *methodSignatureForSelectorInProtocol(SEL sel, Protocol *protocol) {
+    struct objc_method_description method_description = protocol_getMethodDescription(protocol, sel, YES, YES);
+
+    if (!method_description.name) {
+        method_description = protocol_getMethodDescription(protocol, sel, NO, YES);
+    }
+
+    return method_description.name ? [NSMethodSignature signatureWithObjCTypes:method_description.types] : nil;
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
+    NSMethodSignature *signature = [super methodSignatureForSelector:sel];
+    if (signature) {
+        return signature;
+    }
+
+    for (Protocol *protocol in self.protocols) {
+        signature = methodSignatureForSelectorInProtocol(sel, protocol);
+        if (signature) {
+            return signature;
+        }
+    }
+
+    return nil;
+}
+
 - (BOOL)respondsToSelector:(SEL)selector {
     if (class_respondsToSelector(self.klass, selector)) {
         return YES;
@@ -58,14 +84,6 @@ static bool CDR_protocol_hasSelector(Protocol *protocol, SEL selector) {
         }
     }
     return NO;
-}
-
-- (void)doesNotRecognizeSelector:(SEL)selector {
-    if ([self has_rejected_method_for:selector]) {
-        NSString *reason = [NSString stringWithFormat:@"Received message with explicitly rejected selector <%@>", NSStringFromSelector(selector)];
-        [[NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil] raise];
-    }
-    [super doesNotRecognizeSelector:selector];
 }
 
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol {
@@ -130,7 +148,8 @@ id CDR_fake_for(BOOL require_explicit_stubs, Protocol *protocol, ...) {
                                userInfo:nil] raise];
     }
 
-    if (!class_addProtocol(klass, @protocol(CedarDouble))) {
+    if (!class_conformsToProtocol(klass, @protocol(CedarDouble)) &&
+        !class_addProtocol(klass, @protocol(CedarDouble))) {
         [[NSException exceptionWithName:NSInternalInconsistencyException
                                  reason:[NSString stringWithFormat:@"Failed to add CedarDouble protocol class when faking protocol %s", protocol_name]
                                userInfo:nil] raise];

@@ -71,6 +71,11 @@
     return self.reason;
 }
 
+- (void)raise {
+    NSLog(@"Raising %@", self);
+    [super raise];
+}
+
 - (NSString *)callStackSymbolicatedSymbols:(NSError **)error {
     if (!self.callStackReturnAddresses) return nil;
 
@@ -122,7 +127,7 @@
     }
 
     *lineNumber = 0;
-    *reason = [object description];
+    *reason = [object respondsToSelector:@selector(reason)] ? [(id)object reason] : [object description];
 }
 
 + (BOOL)extractReason:(NSString **)reason fileName:(NSString **)fileName lineNumber:(int *)lineNumber fromString:(NSString *)string {

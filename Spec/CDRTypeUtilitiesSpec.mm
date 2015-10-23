@@ -1,9 +1,11 @@
-#import <Cedar/CDRSpecHelper.h>
+#import "CDRSpecHelper.h"
 #import "CDRTypeUtilities.h"
 #import "CDRNil.h"
 
 using namespace Cedar::Matchers;
 using namespace Cedar::Doubles;
+
+struct SomeStruct { int val; };
 
 SPEC_BEGIN(CDRTypeUtilitiesSpec)
 
@@ -122,7 +124,7 @@ describe(@"CDRTypeUtilities", ^{
 
             context(@"typed as a SEL", ^{
                 it(@"should return CDRNil", ^{
-                    SEL mySelector = nil;
+                    SEL mySelector = NULL;
                     [CDRTypeUtilities boxedObjectOfBytes:(const char *)&mySelector ofObjCType:@encode(SEL)] should equal([CDRNil nilObject]);
                 });
             });
@@ -167,8 +169,8 @@ describe(@"CDRTypeUtilities", ^{
         });
 
         it(@"should return an NSValue for other Types", ^{
-            CGRect r = CGRectMake(1, 2, 3, 4);
-            (id)[CDRTypeUtilities boxedObjectOfBytes:(const char *)&r ofObjCType:@encode(CGRect)] should equal([NSValue valueWithBytes:&r objCType:@encode(CGRect)]);
+            SomeStruct s = { 0 };
+            (id)[CDRTypeUtilities boxedObjectOfBytes:(const char *)&s ofObjCType:@encode(SomeStruct)] should equal([NSValue valueWithBytes:&s objCType:@encode(SomeStruct)]);
         });
     });
 

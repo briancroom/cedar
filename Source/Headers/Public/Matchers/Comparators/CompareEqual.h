@@ -33,4 +33,9 @@ namespace Cedar { namespace Matchers { namespace Comparators {
     bool compare_equal(const NSRange actualValue, const U & expectedValue) {
         return NSEqualRanges(actualValue, expectedValue);
     }
+
+#pragma mark Selectors
+    inline bool compare_equal(SEL actualValue, SEL expectedValue) {
+        return sel_isEqual(actualValue, expectedValue);
+    }
 }}}

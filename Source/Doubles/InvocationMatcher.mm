@@ -33,7 +33,7 @@ namespace Cedar { namespace Doubles {
         for (arguments_vector_t::const_iterator cit = arguments_.begin(); cit != arguments_.end() && matches; ++cit, ++index) {
             const char *actualArgumentEncoding = [invocation.methodSignature getArgumentTypeAtIndex:index];
             NSUInteger actualArgumentSize;
-            NSGetSizeAndAlignment(actualArgumentEncoding, &actualArgumentSize, nil);
+            NSGetSizeAndAlignment(actualArgumentEncoding, &actualArgumentSize, NULL);
 
             char actualArgumentBytes[actualArgumentSize];
             [invocation getArgument:&actualArgumentBytes atIndex:index];

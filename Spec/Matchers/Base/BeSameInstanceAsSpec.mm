@@ -1,9 +1,4 @@
-#if TARGET_OS_IPHONE
-#import <Cedar/CDRSpecHelper.h>
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
-
+#import "Cedar.h"
 extern "C" {
 #import "ExpectFailureWithMessage.h"
 }
@@ -15,7 +10,7 @@ SPEC_BEGIN(BeSameInstanceAsSpec)
 describe(@"be_same_instance_as matcher", ^{
     describe(@"when the actual value is not a pointer", ^{
         int actualValue = 1;
-        int *expectedValue = nil;
+        int *expectedValue = NULL;
 
         it(@"should fail with an exception", ^{
             expectFailureWithMessage(@"Attempt to compare non-pointer type for sameness.", ^{
@@ -47,7 +42,7 @@ describe(@"be_same_instance_as matcher", ^{
         });
 
         describe(@"and the values do not point to the same address space", ^{
-            int *expectedValue = nil;
+            int *expectedValue = NULL;
 
             describe(@"positive match", ^{
                 it(@"should fail with a sensible failure message", ^{
@@ -66,10 +61,10 @@ describe(@"be_same_instance_as matcher", ^{
     });
 
     describe(@"when the actual value is nil", ^{
-        int *actualValue = nil;
+        int *actualValue = NULL;
 
         describe(@"and the values are both nil", ^{
-            int *expectedValue = nil;
+            int *expectedValue = NULL;
 
             it(@"should not pass", ^{
                 expectFailureWithMessage(@"Unexpected use of be_same_instance_as matcher to check for nil. Both the actual and given values are nil. This is probably not what you intended to verify.", ^{

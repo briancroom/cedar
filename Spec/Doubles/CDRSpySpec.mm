@@ -1,4 +1,4 @@
-#import <Cedar/CDRSpecHelper.h>
+#import "Cedar.h"
 #import "SimpleIncrementer.h"
 #import "ObjectWithForwardingTarget.h"
 #import "ArgumentReleaser.h"
@@ -261,25 +261,25 @@ describe(@"spy_on", ^{
         void (^itShouldPlayNiceWithKVO)(void) = ^{
             it(@"should not raise exception when adding or removing an observer", ^{
                 ^{ [observedObject addObserver:observer forKeyPath:keyPath options:0 context:NULL];
-                    [observedObject removeObserver:observer forKeyPath:keyPath context:NULL]; }
+                    [observedObject removeObserver:observer forKeyPath:keyPath]; }
                 should_not raise_exception;
             });
 
             it(@"should not raise exception when adding or removing an observer", ^{
                 ^{ [observedObject addObserver:observer forKeyPath:keyPath options:0 context:NULL];
-                    [observedObject removeObserver:observer forKeyPath:keyPath context:NULL]; }
+                    [observedObject removeObserver:observer forKeyPath:keyPath]; }
                 should_not raise_exception;
             });
 
             it(@"should correctly record adding and removing an observer", ^{
                 observedObject should_not have_received("addObserver:forKeyPath:options:context:");
-                observedObject should_not have_received("removeObserver:forKeyPath:context:");
+                observedObject should_not have_received("removeObserver:forKeyPath:");
 
                 [observedObject addObserver:observer forKeyPath:keyPath options:0 context:NULL];
                 observedObject should have_received("addObserver:forKeyPath:options:context:");
 
-                [observedObject removeObserver:observer forKeyPath:keyPath context:NULL];
-                observedObject should have_received("removeObserver:forKeyPath:context:");
+                [observedObject removeObserver:observer forKeyPath:keyPath];
+                observedObject should have_received("removeObserver:forKeyPath:");
             });
 
             it(@"should record shorthand method for removing an observer", ^{
@@ -356,6 +356,7 @@ describe(@"spy_on", ^{
             itShouldPlayNiceWithKVO();
         });
 
+#ifndef __GNUSTEP_RUNTIME__
         context(@"with KVO on an ordered set property", ^{
             beforeEach(^{
                 keyPath = @"orderedSet";
@@ -366,6 +367,7 @@ describe(@"spy_on", ^{
 
             itShouldPlayNiceWithKVO();
         });
+#endif
 
         context(@"with a KVO on a simple manual property", ^{
             beforeEach(^{

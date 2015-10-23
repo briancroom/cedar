@@ -1,7 +1,13 @@
 #import "CDRSymbolicator.h"
 #import <objc/runtime.h>
+#ifdef __MACH
 #import <mach-o/dyld.h>
+#endif
+
+#if CDR_SYMBOLICATION_AVAILABLE
 #import <libunwind.h>
+#endif
+
 #import <regex.h>
 
 const NSString *kCDRSymbolicatorErrorDomain = @"kCDRSymbolicatorErrorDomain";
@@ -209,6 +215,9 @@ NSUInteger CDRCallerStackAddress() {
     }
 
     // NB: this will almost always fail if the version of Xcode at this location differs from the version used to build the tests
+#ifndef DEVELOPER_BIN_DIR
+#define DEVELOPER_BIN_DIR @"Applications/Xcode.app"
+#endif
     NSString *command = [DEVELOPER_BIN_DIR stringByAppendingPathComponent:@"atos"];
     NSString *output = [self.class shellOutWithCommand:command arguments:arguments];
     self.outputLines = [output componentsSeparatedByString:@"\n"];
@@ -283,6 +292,7 @@ NSUInteger CDRCallerStackAddress() {
 @implementation CDRAtosTask (CurrentTestExecutable)
 
 + (CDRAtosTask *)taskForCurrentTestExecutable {
+#ifdef __MACH__
     uint32_t imageCount =  _dyld_image_count();
     BOOL runningWithTestBundle = objc_getClass("SenTestProbe") || objc_getClass("XCTestProbe");
 
@@ -302,6 +312,7 @@ NSUInteger CDRCallerStackAddress() {
                                                slide:slide
                                            addresses:nil] autorelease];
     }
+#endif
 
     return nil;
 }

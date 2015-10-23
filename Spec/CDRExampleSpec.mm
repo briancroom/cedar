@@ -1,12 +1,4 @@
-#if TARGET_OS_IPHONE
-// Normally you would include this file out of the framework.  However, we're
-// testing the framework here, so including the file from the framework will
-// conflict with the compiler attempting to include the file from the project.
 #import "CDRSpecHelper.h"
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
-
 #import "CDRExample.h"
 #import "CDRExampleGroup.h"
 #import "CDRSpecFailure.h"
@@ -15,6 +7,11 @@
 #import "FibonacciCalculator.h"
 #import "CDRReportDispatcher.h"
 #import <objc/runtime.h>
+#if __has_include(<objc/objc-arc.h>) // for GNUstep
+extern "C" {
+#import <objc/objc-arc.h>
+}
+#endif
 
 using namespace Cedar::Matchers;
 using namespace Cedar::Doubles;
@@ -383,7 +380,7 @@ describe(@"CDRExample", ^{
                 spy_on(mockObserver);
             });
 
-            it(@"should report when the state of a non-collection property changes", ^{
+            fit(@"should report when the state of a non-collection property changes", ^{
                 [example addObserver:mockObserver forKeyPath:@"state" options:0 context:NULL];
                 [example runWithDispatcher:dispatcher];
                 [example removeObserver:mockObserver forKeyPath:@"state"];

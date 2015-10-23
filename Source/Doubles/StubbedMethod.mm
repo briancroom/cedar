@@ -8,15 +8,15 @@
 
 namespace Cedar { namespace Doubles {
 
-    StubbedMethod::StubbedMethod(SEL selector) : InvocationMatcher(selector), exception_to_raise_(0), invocation_block_(0), implementation_block_(0), is_override_(false) {}
-    StubbedMethod::StubbedMethod(const char * method_name) : InvocationMatcher(sel_registerName(method_name)), exception_to_raise_(0), invocation_block_(0), implementation_block_(0), is_override_(false) {}
+    StubbedMethod::StubbedMethod(SEL selector) : InvocationMatcher(selector), is_override_(false), invocation_block_(0), implementation_block_(0), exception_to_raise_(0) {}
+    StubbedMethod::StubbedMethod(const char * method_name) : InvocationMatcher(sel_registerName(method_name)), is_override_(false), invocation_block_(0), implementation_block_(0), exception_to_raise_(0) {}
     StubbedMethod::StubbedMethod(const StubbedMethod &rhs)
     : InvocationMatcher(rhs)
     , return_value_(rhs.return_value_)
+    , is_override_(rhs.is_override_)
     , invocation_block_([rhs.invocation_block_ retain])
     , implementation_block_([rhs.implementation_block_ retain])
-    , exception_to_raise_(rhs.exception_to_raise_)
-    , is_override_(rhs.is_override_) {}
+    , exception_to_raise_(rhs.exception_to_raise_) {}
 
     /*virtual*/ StubbedMethod::~StubbedMethod() {
         [invocation_block_ release];
@@ -35,7 +35,7 @@ namespace Cedar { namespace Doubles {
     }
 
     StubbedMethod & StubbedMethod::and_do_block(implementation_block_t block) {
-        if (![block isKindOfClass:NSClassFromString(@"NSBlock")]) {
+        if (![block isKindOfClass:NSClassFromString(@"NSBlock")] && ![block isKindOfClass:NSClassFromString(@"_NSBlock")]) {
             [[NSException exceptionWithName:NSInternalInconsistencyException
                                      reason:[NSString stringWithFormat:@"Attempted to stub and do a block that isn't a block for <%@>", NSStringFromSelector(this->selector())]
                                    userInfo:nil] raise];
@@ -221,6 +221,8 @@ namespace Cedar { namespace Doubles {
             const void * returnValue = this->return_value().value_bytes();
             [invocation setReturnValue:const_cast<void *>(returnValue)];
             return true;
+        } else {
+            [invocation cdr_clearReturnValue];
         }
         return false;
     }

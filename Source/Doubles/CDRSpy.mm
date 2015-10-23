@@ -5,10 +5,6 @@
 #import "CedarDoubleImpl.h"
 #import "CDRSpyInfo.h"
 
-@interface NSInvocation (UndocumentedPrivate)
-- (void)invokeUsingIMP:(IMP)imp;
-@end
-
 @implementation CDRSpy
 
 + (void)interceptMessagesForInstance:(id)instance {
@@ -17,6 +13,7 @@
     }
     if (![object_getClass(instance) conformsToProtocol:@protocol(CedarDouble)]) {
         [CDRSpyInfo storeSpyInfoForObject:instance];
+        NSLog(@"Turning %p into a spy", instance);
         object_setClass(instance, self);
     }
 }
@@ -27,6 +24,7 @@
     }
     Class originalClass = [CDRSpyInfo spyInfoForObject:instance].spiedClass;
     if ([CDRSpyInfo clearSpyInfoForObject:instance]) {
+        NSLog(@"Un-spyifying %p", instance);
         object_setClass(instance, originalClass);
     }
 }
@@ -35,71 +33,79 @@
 
 - (id)retain {
     __block id that = self;
-    [self as_spied_class:^{
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
+    CDRSpy_as_spied_class(self, ^{
         [that retain];
-    }];
+    });
     return self;
 }
 
 - (BOOL)retainWeakReference {
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
     __block id that = self;
     __block BOOL res = NO;
-    [self unsafe_as_spied_class:^{
+    CDRSpy_unsafe_as_spied_class(self, ^{
         res = [that retainWeakReference];
-    }];
+    });
     return res;
 }
 
 - (oneway void)release {
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
     __block id that = self;
-    [self as_spied_class:^{
+    CDRSpy_as_spied_class(self, ^{
         [that release];
-    }];
+    });
 }
 
 - (id)autorelease {
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
     __block id that = self;
-    [self as_spied_class:^{
+    CDRSpy_as_spied_class(self, ^{
         [that autorelease];
-    }];
+    });
     return self;
 }
 
 - (NSUInteger)retainCount {
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
     __block id that = self;
     __block NSUInteger count = 0;
-    [self as_spied_class:^{
+    CDRSpy_as_spied_class(self, ^{
         count = [that retainCount];
-    }];
+    });
     return count;
 }
 
 - (NSString *)description {
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
     __block id that = self;
     __block NSString *description = nil;
-    [self as_spied_class:^{
+    CDRSpy_as_spied_class(self, ^{
         description = [that description];
-    }];
+    });
 
     return description;
 }
 
 - (BOOL)isEqual:(id)object {
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
     __block id that = self;
     __block BOOL isEqual = NO;
-    [self as_spied_class:^{
+    CDRSpy_as_spied_class(self, ^{
         isEqual = [that isEqual:object];
-    }];
+    });
 
     return isEqual;
 }
 
 - (NSUInteger)hash {
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
     __block id that = self;
     __block NSUInteger hash = 0;
-    [self as_spied_class:^{
+    CDRSpy_as_spied_class(self, ^{
         hash = [that hash];
-    }];
+    });
 
     return hash;
 }
@@ -114,8 +120,20 @@
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
-    [self.cedar_double_impl record_method_invocation:invocation];
-    int method_invocation_result = [self.cedar_double_impl invoke_stubbed_method:invocation];
+    // NOTE: In concurrent situations, `self` may lose its spy status at any point
+    //       during the execution of this method.
+    NSLog(@"Spy (%p, %s) forwardInvocation %@", self, class_getName(object_getClass(self)), invocation);
+
+#ifdef __GNUSTEP_RUNTIME__ // GNUstep can look up a valid method signature even if -methodSignatureForSelector: returns nil
+    if (![self methodSignatureForSelector:invocation.selector]) {
+        NSLog(@"Calling doesNotRecognizeSelector: from spy (%p, %s)", self, class_getName(object_getClass(self)));
+        [self doesNotRecognizeSelector:invocation.selector];
+    }
+#endif
+
+    CedarDoubleImpl *cedar_double_impl = CDRSpy_cedar_double_impl(self);
+    [cedar_double_impl record_method_invocation:invocation];
+    int method_invocation_result = [cedar_double_impl invoke_stubbed_method:invocation];
 
     [invocation cdr_copyBlockArguments];
     [invocation retainArguments];
@@ -125,9 +143,9 @@
         __block id that = self;
 
         SEL selector = invocation.selector;
-        [self as_spied_class:^{
+        CDRSpy_as_spied_class(self, ^{
             forwardingTarget = [that forwardingTargetForSelector:selector];
-        }];
+        });
 
         if (forwardingTarget) {
             [invocation invokeWithTarget:forwardingTarget];
@@ -135,24 +153,30 @@
             CDRSpyInfo *spyInfo = [CDRSpyInfo spyInfoForObject:self];
             IMP privateImp = [spyInfo impForSelector:selector];
             if (privateImp) {
+                NSLog(@"  Invoking using IMP");
                 [invocation invokeUsingIMP:privateImp];
             } else {
                 __block id that = self;
-                [self as_spied_class:^{
+                CDRSpy_as_spied_class(self, ^{
+                    NSLog(@"  Calling invoke");
                     [invocation invoke];
                     [spyInfo setSpiedClass:object_getClass(that)];
-                }];
+                });
             }
         }
     }
+
+    NSLog(@"  Leaving forwardInvocation %@", invocation);
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
     __block NSMethodSignature *originalMethodSignature = nil;
 
-    [self as_spied_class:^{
+    NSLog(@"Spy (%p, %s) %s: %s", self, class_getName(object_getClass(self)), sel_getName(_cmd), sel_getName(sel));
+    CDRSpy_as_spied_class(self, ^{
         originalMethodSignature = [self methodSignatureForSelector:sel];
-    }];
+    });
+    NSLog(@" Got method sig: %@", originalMethodSignature);
 
     return originalMethodSignature;
 }
@@ -160,9 +184,10 @@
 - (BOOL)respondsToSelector:(SEL)selector {
     __block BOOL respondsToSelector = NO;
 
-    [self as_spied_class:^{
+    NSLog(@"Spy (%p, %s) %s", self, class_getName(object_getClass(self)), sel_getName(_cmd));
+    CDRSpy_as_spied_class(self, ^{
         respondsToSelector = [self respondsToSelector:selector];
-    }];
+    });
 
     return respondsToSelector;
 }
@@ -180,57 +205,98 @@
 }
 
 - (Cedar::Doubles::StubbedMethod &)add_stub:(const Cedar::Doubles::StubbedMethod &)stubbed_method {
-    return [self.cedar_double_impl add_stub:stubbed_method];
+    return [CDRSpy_cedar_double_impl(self) add_stub:stubbed_method];
+}
+
+- (void)reject_method:(const Cedar::Doubles::RejectedMethod &)rejected_method {
+    return [CDRSpy_cedar_double_impl(self) reject_method:rejected_method];
 }
 
 - (NSArray *)sent_messages {
-    return self.cedar_double_impl.sent_messages;
+    return CDRSpy_cedar_double_impl(self).sent_messages;
 }
 
 - (NSArray *)sent_messages_with_selector:(SEL)selector {
-    return [self.cedar_double_impl sent_messages_with_selector:selector];
+    return [CDRSpy_cedar_double_impl(self) sent_messages_with_selector:selector];
 }
 
 - (void)reset_sent_messages {
-    [self.cedar_double_impl reset_sent_messages];
+    [CDRSpy_cedar_double_impl(self) reset_sent_messages];
+}
+
+- (BOOL)has_stubbed_method_for:(SEL)selector {
+    return [CDRSpy_cedar_double_impl(self) has_stubbed_method_for:selector];
+}
+
+- (BOOL)has_rejected_method_for:(SEL)selector {
+    return [CDRSpy_cedar_double_impl(self) has_rejected_method_for:selector];
 }
 
 #pragma mark - Private
 
-- (CedarDoubleImpl *)cedar_double_impl {
+static CedarDoubleImpl *CDRSpy_cedar_double_impl(id self) {
     return [CDRSpyInfo cedarDoubleForObject:self];
 }
 
-- (void)as_spied_class:(void(^)())block {
+static void CDRSpy_as_spied_class(id self, void(^block)(void)) {
     CDRSpyInfo *info = [CDRSpyInfo spyInfoForObject:self];
-    Class originalClass = info.spiedClass;
-    if (originalClass != Nil) {
-        Class spyClass = object_getClass(self);
-        object_setClass(self, originalClass);
+    if (info) {
+        Class originalClass = info.spiedClass;
+        if (originalClass != Nil) {
+            Class spyClass = object_getClass(self);
+            NSLog(@"Temporarily restoring %p", self);
+            object_setClass(self, originalClass);
 
-        @try {
-            block();
-        } @finally {
-            if ([CDRSpyInfo spyInfoForObject:self]) {
+            @try {
+                block();
+            } @finally {
+                if ([CDRSpyInfo spyInfoForObject:self] == info) {
+                    NSLog(@"  %p will be a spy again", self);
+                    object_setClass(self, spyClass);
+                }
+            }
+        }
+    } else {
+        // We aren't a spy anymore
+        NSLog(@"Invoking block after losing a spy status");
+        block();
+    }
+}
+
+static void CDRSpy_unsafe_as_spied_class(id self, void(^block)(void)) {
+    CDRSpyInfo *info = [CDRSpyInfo spyInfoForObject:self];
+    if (info) {
+        Class originalClass = info.spiedClass;
+        if (originalClass != Nil) {
+            Class spyClass = object_getClass(self);
+            NSLog(@"Temporarily restoring %p unsafely", self);
+            object_setClass(self, originalClass);
+
+            @try {
+                block();
+            } @finally {
+                NSLog(@"  %p will be a spy again", self);
                 object_setClass(self, spyClass);
             }
         }
+    } else {
+        NSLog(@"Invoking block after losing a spy status");
+        block();
     }
 }
 
-- (void)unsafe_as_spied_class:(void(^)())block {
-    CDRSpyInfo *info = [CDRSpyInfo spyInfoForObject:self];
-    Class originalClass = info.spiedClass;
-    if (originalClass != Nil) {
-        Class spyClass = object_getClass(self);
-        object_setClass(self, originalClass);
+#pragma mark - GNUstep Compatibility
+#ifdef __GNUSTEP_RUNTIME__
+// Apple's NSProxy implements these, although it's not publicly declared as doing so
 
-        @try {
-            block();
-        } @finally {
-            object_setClass(self, spyClass);
-        }
-    }
++ (BOOL)instancesRespondToSelector:(SEL)aSelector {
+    return class_respondsToSelector(self, aSelector);
 }
+
++ (BOOL)conformsToProtocol:(Protocol *)protocol {
+    return protocol_isEqual(protocol, @protocol(NSObject)) || protocol_isEqual(protocol, @protocol(CedarDouble));
+}
+
+#endif
 
 @end

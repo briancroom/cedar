@@ -1,9 +1,4 @@
-#if TARGET_OS_IPHONE
-#import "CDRSpecHelper.h"
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
-
+#import "Cedar.h"
 #include <vector>
 #include <map>
 #include <set>
@@ -413,7 +408,7 @@ describe(@"be_empty shorthand syntax (no parentheses)", ^{
 
     describe(@"negative match", ^{
         it(@"should fail with a sensible failure message", ^{
-            expectFailureWithMessage(@"Expected <(\n)> to not be empty", ^{
+            expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not be empty", container], ^{
                 expect(container).to_not(be_empty);
             });
         });

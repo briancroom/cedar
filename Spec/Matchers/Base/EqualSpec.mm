@@ -1,8 +1,4 @@
-#if TARGET_OS_IPHONE
-#import <Cedar/CDRSpecHelper.h>
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
+#import "Cedar.h"
 
 #ifndef NS_ROOT_CLASS
 #define NS_ROOT_CLASS
@@ -1625,7 +1621,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to not equal <(\n    Hello\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to_not(equal(expectedArray));
                         });
                     });
@@ -1639,7 +1635,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to equal <(\n    goodbye\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to(equal(expectedArray));
                         });
                     });
@@ -1669,7 +1665,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to not equal <(\n    Hello\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to_not(equal(expectedArray));
                         });
                     });
@@ -1683,7 +1679,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to equal <(\n    goodbye\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to(equal(expectedArray));
                         });
                     });
@@ -1713,7 +1709,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to not equal <(\n    Hello\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to_not(equal(expectedArray));
                         });
                     });
@@ -1727,7 +1723,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to equal <(\n    goodbye\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to(equal(expectedArray));
                         });
                     });
@@ -1757,7 +1753,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to not equal <(\n    Hello\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to_not(equal(expectedArray));
                         });
                     });
@@ -1771,7 +1767,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <(\n    Hello\n)> to equal <(\n    goodbye\n)>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to equal <%@>", actualArray, expectedArray], ^{
                             expect(actualArray).to(equal(expectedArray));
                         });
                     });
@@ -1805,7 +1801,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <{42, 56}> to not equal <{42, 56}>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not equal <%@>", NSStringFromRange(actualValue), NSStringFromRange(expectedValue)], ^{
                             expect(actualValue).to_not(equal(expectedValue));
                         });
                     });
@@ -1819,7 +1815,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <{42, 56}> to equal <{0, 56}>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to equal <%@>", NSStringFromRange(actualValue), NSStringFromRange(expectedValue)], ^{
                             expect(actualValue).to(equal(expectedValue));
                         });
                     });
@@ -1839,7 +1835,7 @@ describe(@"equal matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <{42, 56}> to equal <{42, 0}>", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to equal <%@>", NSStringFromRange(actualValue), NSStringFromRange(expectedValue)], ^{
                             expect(actualValue).to(equal(expectedValue));
                         });
                     });

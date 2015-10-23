@@ -1,9 +1,4 @@
-#if TARGET_OS_IPHONE
-#import <Cedar/CDRSpecHelper.h>
-#else
-#import <Cedar/CDRSpecHelper.h>
-#endif
-
+#import "Cedar.h"
 extern "C" {
 #import "ExpectFailureWithMessage.h"
 }
@@ -33,7 +28,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <1970-01-01 00:00:01 +0000 (1.000000)> to not be close to <1970-01-01 00:00:01 +0000 (1.090000)> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@ (1.000000)> to not be close to <%@ (1.090000)> (within 0.1)", actualValue, expectedValue], ^{
                             actualValue should_not be_close_to(expectedValue).within(threshold);
                         });
                     });
@@ -47,7 +42,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <1970-01-01 00:00:01 +0000 (1.000000)> to be close to <1970-01-01 00:00:02 +0000 (2.000000)> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@ (1.000000)> to be close to <%@ (2.000000)> (within 0.1)", actualValue, expectedValue], ^{
                             actualValue should be_close_to(expectedValue).within(threshold);
                         });
                     });
@@ -75,7 +70,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <1970-01-01 00:00:01 +0000 (1.000000)> to not be close to <1970-01-01 00:00:01 +0000 (1.009000)> (within 0.01)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@ (1.000000)> to not be close to <%@ (1.009000)> (within 0.01)", actualValue, expectedValue], ^{
                             actualValue should_not be_close_to(expectedValue);
                         });
                     });
@@ -89,7 +84,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <1970-01-01 00:00:01 +0000 (1.000000)> to be close to <1970-01-01 00:00:02 +0000 (2.000000)> (within 0.01)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@ (1.000000)> to be close to <%@ (2.000000)> (within 0.01)", actualValue, expectedValue], ^{
                             actualValue should be_close_to(expectedValue);
                         });
                     });
@@ -308,7 +303,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666667> to not be close to <0.7666666666666666> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <0.6666667> to not be close to <%@> (within 0.1)", expectedValue], ^{
                             expect(actualValue).to_not(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -322,7 +317,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666667> to be close to <0.8666666666666667> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <0.6666667> to be close to <%@> (within 0.1)", expectedValue], ^{
                             expect(actualValue).to(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -402,7 +397,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.666667> to not be close to <0.7666666666666666> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <0.666667> to not be close to <%@> (within 0.1)", expectedValue], ^{
                             expect(actualValue).to_not(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -416,7 +411,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.666667> to be close to <0.8666666666666667> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <0.666667> to be close to <%@> (within 0.1)", expectedValue], ^{
                             expect(actualValue).to(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -452,7 +447,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666666666666666> to not be close to <0.756667> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not be close to <0.756667> (within 0.1)", actualValue], ^{
                             expect(actualValue).to_not(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -466,7 +461,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666666666666666> to be close to <0.866667> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to be close to <0.866667> (within 0.1)", actualValue], ^{
                             expect(actualValue).to(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -497,7 +492,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666666666666666> to not be close to <0.7666666666666666> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not be close to <%@> (within 0.1)", actualValue, expectedValue], ^{
                             expect(actualValue).to_not(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -511,7 +506,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666666666666666> to be close to <0.8666666666666667> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to be close to <%@> (within 0.1)", actualValue, expectedValue], ^{
                             expect(actualValue).to(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -548,7 +543,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"negative match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666666666666666> to not be close to <0.7666666666666666> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to not be close to <%@> (within 0.1)", NSDecimalString(&actualValue, nil), NSDecimalString(&expectedValue, nil)], ^{
                             expect(actualValue).to_not(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -564,7 +559,7 @@ describe(@"be_close_to matcher", ^{
 
                 describe(@"positive match", ^{
                     it(@"should fail with a sensible failure message", ^{
-                        expectFailureWithMessage(@"Expected <0.6666666666666666> to be close to <0.8666666666666666> (within 0.1)", ^{
+                        expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to be close to <%@> (within 0.1)", NSDecimalString(&actualValue, nil), NSDecimalString(&expectedValue, nil)], ^{
                             expect(actualValue).to(be_close_to(expectedValue).within(threshold));
                         });
                     });
@@ -582,7 +577,7 @@ describe(@"be_close_to matcher", ^{
     describe(@"when the actual value is not a valid type to compare", ^{
         describe(@"positive match", ^{
             it(@"should fail", ^{
-                expectFailureWithMessage(@"Actual value <1.0> (__NSCFConstantString) is not a numeric value (NSNumber, NSDate, float, etc.)", ^{
+                expectFailureWithMessage([NSString stringWithFormat:@"Actual value <1.0> (%@) is not a numeric value (NSNumber, NSDate, float, etc.)", [@"" class]], ^{
                     NSNumber *value = [@[@"1.0"] firstObject];
                     value should be_close_to(@1.0001);
                 });
@@ -591,7 +586,7 @@ describe(@"be_close_to matcher", ^{
 
         describe(@"negative match", ^{
             it(@"should fail", ^{
-                expectFailureWithMessage(@"Actual value <1.0> (__NSCFConstantString) is not a numeric value (NSNumber, NSDate, float, etc.)", ^{
+                expectFailureWithMessage([NSString stringWithFormat:@"Actual value <1.0> (%@) is not a numeric value (NSNumber, NSDate, float, etc.)", [@"" class]], ^{
                     NSNumber *value = [@[@"1.0"] firstObject];
                     value should_not be_close_to(@1.0001);
                 });
