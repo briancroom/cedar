@@ -29,6 +29,7 @@ CedarSpecs_OBJCC_FILES = main.mm \
 	Doubles/CedarDoubleSharedExamples.mm \
 	Doubles/CedarNiceFakeSharedExamples.mm \
 	Doubles/CedarOrdinaryFakeSharedExamples.mm \
+	Doubles/HaveReceivedSpec.mm \
 	Matchers/ExpectFailureWithMessage.mm \
 	Matchers/Base/BeCloseToSpec.mm \
 	Matchers/Base/BeFalsySpec.mm \
@@ -64,8 +65,6 @@ CedarSpecs_OBJCC_FILES = main.mm \
 #	Matchers/Base/BeGTESpec.mm \
 #	Matchers/Base/BeLessThanSpec.mm \
 #	Matchers/Base/BeLTESpec.mm \
-	
-#	Doubles/HaveReceivedSpec.mm \
 
 
 

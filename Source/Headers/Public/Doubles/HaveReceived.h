@@ -6,6 +6,7 @@ namespace Cedar { namespace Doubles {
 
     extern "C" Class object_getClass(id);
     extern NSString * recorded_invocations_message(NSArray *recordedInvocations);
+    extern void verify_object_is_a_double(id instance);
 
     template<typename MessageBuilder_ = Matchers::BaseMessageBuilder>
     class HaveReceived : private InvocationMatcher {
@@ -34,17 +35,6 @@ namespace Cedar { namespace Doubles {
     protected:
         template<typename U>
         NSString * failure_message_end(const U & value, bool negation) const;
-
-    private:
-        void verify_object_is_a_double(id instance) const {
-            Class clazz = object_getClass(instance);
-            if (![clazz instancesRespondToSelector:@selector(sent_messages)]) {
-                [[NSException exceptionWithName:NSInternalInconsistencyException
-                                         reason:[NSString stringWithFormat:@"Received expectation for non-double object <%@>", instance]
-                                       userInfo:nil]
-                 raise];
-            }
-        }
     };
 
     inline HaveReceived<> have_received(const SEL expectedSelector) {
@@ -83,7 +73,7 @@ namespace Cedar { namespace Doubles {
 
     template<typename MessageBuilder_>
     bool HaveReceived<MessageBuilder_>::matches(id instance) const {
-        this->verify_object_is_a_double(instance);
+        verify_object_is_a_double(instance);
         this->verify_count_and_types_of_arguments(instance);
 
         for (NSInvocation *invocation in [instance sent_messages]) {

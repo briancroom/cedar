@@ -8,17 +8,19 @@ static NSMutableArray *registeredDoubleImpls__ = nil;
     StubbedMethod::selector_map_t stubbed_methods_;
     NSMutableArray *sent_messages_;
     NSObject<CedarDouble> *parent_double_;
+    NSLock *sent_messages_lock_;
 }
 
 @property (nonatomic, retain, readwrite) NSMutableArray *sent_messages;
 @property (nonatomic, retain) NSMutableArray *rejected_methods;
 @property (nonatomic, assign) NSObject<CedarDouble> *parent_double;
+@property (nonatomic, retain) NSLock *sent_messages_lock;
 
 @end
 
 @implementation CedarDoubleImpl
 
-@synthesize sent_messages = sent_messages_, parent_double = parent_double_;
+@synthesize sent_messages = sent_messages_, parent_double = parent_double_, sent_messages_lock = sent_messages_lock_;
 
 + (void)afterEach {
     [CedarDoubleImpl releaseRecordedInvocations];
@@ -34,6 +36,7 @@ static NSMutableArray *registeredDoubleImpls__ = nil;
         self.sent_messages = [NSMutableArray array];
         self.rejected_methods = [NSMutableArray array];
         self.parent_double = parent_double;
+        self.sent_messages_lock = [[[NSLock alloc] init] autorelease];
         [CedarDoubleImpl registerDoubleImpl:self];
     }
     return self;
@@ -43,10 +46,13 @@ static NSMutableArray *registeredDoubleImpls__ = nil;
     self.parent_double = nil;
     self.sent_messages = nil;
     self.rejected_methods = nil;
+    self.sent_messages_lock = nil;
     [super dealloc];
 }
 
 - (NSArray *)sent_messages_with_selector:(SEL)selector {
+    [self.sent_messages_lock lock];
+
     NSMutableArray *sentMessages = [[NSMutableArray alloc] initWithCapacity:self.sent_messages.count];
 
     for(NSInvocation *invocation in self.sent_messages) {
@@ -54,12 +60,16 @@ static NSMutableArray *registeredDoubleImpls__ = nil;
             [sentMessages addObject:invocation];
         }
     }
+
+    [self.sent_messages_lock unlock];
     
     return [sentMessages autorelease];
 }
 
 - (void)reset_sent_messages {
+    [self.sent_messages_lock lock];
     [self.sent_messages removeAllObjects];
+    [self.sent_messages_lock unlock];
 }
 
 - (void)reject_method:(const RejectedMethod &)rejected_method {
@@ -123,7 +133,9 @@ static NSMutableArray *registeredDoubleImpls__ = nil;
 }
 
 - (void)record_method_invocation:(NSInvocation *)invocation {
+    [self.sent_messages_lock lock];
     [self.sent_messages addObject:invocation];
+    [self.sent_messages_lock unlock];
 }
 
 #pragma mark - Private interface

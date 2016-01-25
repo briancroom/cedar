@@ -180,7 +180,7 @@ describe(@"have_received matcher", ^{
                                                   @"  incrementBy:<2>\n"
                                                   @"  value\n"
                                                   @"  setValue:<2>\n",
-                                                  incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                                                  [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                             expect(incrementer).to(have_received(method).with(expectedParameter));
                         });
 
@@ -188,7 +188,7 @@ describe(@"have_received matcher", ^{
                                                   @"  incrementBy:<2>\n"
                                                   @"  value\n"
                                                   @"  setValue:<2>\n",
-                                                  incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                                                  [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                             expect(incrementer).to(have_received("incrementBy:").with(expectedParameter));
                         });
                     });
@@ -208,11 +208,11 @@ describe(@"have_received matcher", ^{
 
             describe(@"positive match", ^{
                 it(@"should fail with a sensible failure message", ^{
-                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%ld>", incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%ld>", [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                         expect(incrementer).to(have_received(method).with(expectedParameter));
                     });
 
-                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%ld>", incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%ld>", [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                         expect(incrementer).to(have_received("incrementBy:").with(expectedParameter));
                     });
                 });
@@ -289,7 +289,7 @@ describe(@"have_received matcher", ^{
                                                   @"  incrementByNumber:<%@>\n"
                                                   @"  value\n"
                                                   @"  setValue:<3>\n",
-                                                  incrementer, NSStringFromSelector(method),
+                                                  [incrementer description], NSStringFromSelector(method),
                                                   expectedParameter, actualParameter], ^{
                             expect(incrementer).to(have_received(method).with(expectedParameter));
                         });
@@ -298,7 +298,7 @@ describe(@"have_received matcher", ^{
                                                   @"  incrementByNumber:<%@>\n"
                                                   @"  value\n"
                                                   @"  setValue:<3>\n",
-                                                  incrementer, NSStringFromSelector(method),
+                                                  [incrementer description], NSStringFromSelector(method),
                                                   expectedParameter, actualParameter], ^{
                             expect(incrementer).to(have_received("incrementByNumber:").with(expectedParameter));
                         });
@@ -323,7 +323,7 @@ describe(@"have_received matcher", ^{
                                                       @"  incrementByNumber:<3>\n"
                                                       @"  value\n"
                                                       @"  setValue:<3>\n",
-                                                      incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                                                      [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                                 expect(incrementer).to(have_received(method).with(expectedParameter));
                             });
 
@@ -331,7 +331,7 @@ describe(@"have_received matcher", ^{
                                                       @"  incrementByNumber:<3>\n"
                                                       @"  value\n"
                                                       @"  setValue:<3>\n",
-                                                      incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                                                      [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                                 expect(incrementer).to(have_received("incrementByNumber:").with(expectedParameter));
                             });
                         });
@@ -354,7 +354,7 @@ describe(@"have_received matcher", ^{
                                                       @"  incrementByNumber:<3>\n"
                                                       @"  value\n"
                                                       @"  setValue:<3>\n",
-                                                      incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                                                      [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                                 expect(incrementer).to(have_received(method).with(expectedParameter));
                             });
 
@@ -362,7 +362,8 @@ describe(@"have_received matcher", ^{
                                                       @"  incrementByNumber:<3>\n"
                                                       @"  value\n"
                                                       @"  setValue:<3>\n",
-                                                      incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                                                      [incrementer description]
+                            , NSStringFromSelector(method), expectedParameter], ^{
                                 expect(incrementer).to(have_received("incrementByNumber:").with(expectedParameter));
                             });
                         });
@@ -383,11 +384,11 @@ describe(@"have_received matcher", ^{
 
             describe(@"positive match", ^{
                 it(@"should fail with a sensible failure message", ^{
-                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%@>", incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%@>", [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                         expect(incrementer).to(have_received(method).with(expectedParameter));
                     });
 
-                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%@>", incrementer, NSStringFromSelector(method), expectedParameter], ^{
+                    expectFailureWithMessage([NSString stringWithFormat:@"Expected <%@> to have received message <%@>, with arguments: <%@>", [incrementer description], NSStringFromSelector(method), expectedParameter], ^{
                         expect(incrementer).to(have_received("incrementByNumber:").with(expectedParameter));
                     });
                 });
@@ -454,7 +455,7 @@ describe(@"have_received matcher", ^{
                                                   @"  incrementByABit:andABitMore:<83, 32>\n"
                                                   @"  value\n"
                                                   @"  setValue:<115>\n",
-                                                  incrementer, NSStringFromSelector(method), expectedFirstParameter, expectedSecondParameter], ^{
+                                                  [incrementer description], NSStringFromSelector(method), expectedFirstParameter, expectedSecondParameter], ^{
                             expect(incrementer).to(have_received(method).with(expectedFirstParameter, expectedSecondParameter));
                         });
 
@@ -462,7 +463,7 @@ describe(@"have_received matcher", ^{
                                                   @"  incrementByABit:andABitMore:<83, 32>\n"
                                                   @"  value\n"
                                                   @"  setValue:<115>\n",
-                                                  incrementer, NSStringFromSelector(method), expectedFirstParameter, expectedSecondParameter], ^{
+                                                  [incrementer description], NSStringFromSelector(method), expectedFirstParameter, expectedSecondParameter], ^{
                             expect(incrementer).to(have_received("incrementByABit:andABitMore:").with(expectedFirstParameter, expectedSecondParameter));
                         });
                     });
@@ -490,7 +491,7 @@ describe(@"have_received matcher", ^{
                                               @"  incrementByABit:andABitMore:<83, %@>\n"
                                               @"  value\n"
                                               @"  setValue:<83>\n",
-                                              incrementer, NSStringFromSelector(method), actualFirstParameter, @"<nil>"], ^{
+                                              [incrementer description], NSStringFromSelector(method), actualFirstParameter, @"<nil>"], ^{
                         expect(incrementer).to(have_received("incrementByABit:andABitMore:").with(actualFirstParameter, expectedSecondParameter));
                     });
                 });

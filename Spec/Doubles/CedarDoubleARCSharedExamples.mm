@@ -19,9 +19,7 @@ sharedExamplesFor(@"a Cedar double when used with ARC", ^(NSDictionary *sharedCo
 
     context(@"when recording an invocation", ^{
         context(@"inside an async block", ^{
-            fit(@"should complete happily", ^{
-                NSLog(@"*** Beginning ARC shared example with %@", myDouble);
-
+            it(@"should complete happily", ^{
                 __block bool called = false;
                 myDouble stub_method("methodWithBlock:").and_do(^(NSInvocation *invocation) {
                     void (^runBlock)();
@@ -35,23 +33,24 @@ sharedExamplesFor(@"a Cedar double when used with ARC", ^(NSDictionary *sharedCo
 
                 dispatch_group_async(group, queue, ^{
                     dispatch_group_enter(group);
-                    NSLog(@"   Invoking methodWithBlock: from dispatch_group_async");
                     [myDouble methodWithBlock:^{
                         dispatch_group_leave(group);
                     }];
                 });
 
                 dispatch_group_notify(group, queue, ^{
-                    NSLog(@"   Invoking methodWithBlock: from notify");
                     [myDouble methodWithBlock:^{ }];
                 });
 
+                NSLog(@"Waiting for block to be called");
                 while (!called) {
                     NSDate *futureDate = [NSDate dateWithTimeIntervalSinceNow:0.1];
                     [[NSRunLoop currentRunLoop] runUntilDate:futureDate];
                 }
+                NSLog(@"Done waiting");
 
                 myDouble should have_received("methodWithBlock:");
+                NSLog(@"Passed check");
                 [myDouble reset_sent_messages];
                 NSLog(@"*** Finished ARC shared example");
             });

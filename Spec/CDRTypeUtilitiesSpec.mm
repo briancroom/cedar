@@ -9,7 +9,7 @@ struct SomeStruct { int val; };
 
 SPEC_BEGIN(CDRTypeUtilitiesSpec)
 
-describe(@"CDRTypeUtilities", ^{
+fdescribe(@"CDRTypeUtilities", ^{
     describe(@"mapping type encodings and bytes to objective-c objects", ^{
         it(@"should return a boxed number for char", ^{
             char c = 'c';
